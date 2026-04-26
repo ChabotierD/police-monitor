@@ -1,0 +1,1344 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>מוקד דוברות | משטרת ישראל</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800;900&family=Frank+Ruhl+Libre:wght@300;400;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --royal: #1a3a8f;
+  --royal-light: #2952c8;
+  --royal-glow: #3a6aff;
+  --royal-deep: #0d1f5c;
+  --black: #04070f;
+  --black-2: #070d1a;
+  --black-3: #0c1526;
+  --black-4: #111e38;
+  --black-5: #162340;
+  --panel: #0a1128;
+  --panel-2: #0e1835;
+  --border: rgba(41,82,200,0.18);
+  --border-glow: rgba(58,106,255,0.35);
+  --text-primary: #e8eef8;
+  --text-secondary: #7a99cc;
+  --text-muted: #3d5280;
+  --gold: #c9a84c;
+  --gold-light: #e8c97a;
+  --urgent: #e03535;
+  --urgent-glow: rgba(224,53,53,0.3);
+  --success: #1db87a;
+  --font-display: 'Frank Ruhl Libre', serif;
+  --font-body: 'Heebo', sans-serif;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+  background: var(--black);
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  direction: rtl;
+}
+
+/* ═══════════════════════════════════════
+   BACKGROUND AMBIENT
+═══════════════════════════════════════ */
+.bg-ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 0%, rgba(26,58,143,0.12) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 80% 100%, rgba(13,31,92,0.15) 0%, transparent 60%),
+    linear-gradient(180deg, #04070f 0%, #060c1e 100%);
+}
+.bg-grid {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(41,82,200,0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(41,82,200,0.035) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+/* ═══════════════════════════════════════
+   LAYOUT
+═══════════════════════════════════════ */
+.app {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════ */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+  height: 56px;
+  background: rgba(7,13,26,0.95);
+  border-bottom: 1px solid var(--border);
+  backdrop-filter: blur(12px);
+  flex-shrink: 0;
+  position: relative;
+}
+.topbar::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--royal-glow), transparent);
+}
+
+.logo-zone {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.shield {
+  width: 38px;
+  height: 38px;
+  position: relative;
+  flex-shrink: 0;
+}
+.shield svg { width: 100%; height: 100%; }
+.logo-text { line-height: 1.2; }
+.logo-title {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+}
+.logo-sub {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--text-muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.topbar-center {
+  position: absolute;
+  left: 50%; transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.status-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(26,58,143,0.15);
+  border: 1px solid var(--border-glow);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--royal-glow);
+}
+.pulse-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--royal-glow);
+  box-shadow: 0 0 8px var(--royal-glow);
+  animation: pulse 1.8s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity:1; box-shadow: 0 0 8px var(--royal-glow); }
+  50% { opacity:0.4; box-shadow: 0 0 2px var(--royal-glow); }
+}
+.pulse-dot.red {
+  background: var(--urgent);
+  box-shadow: 0 0 8px var(--urgent-glow);
+  animation: pulse-red 1s ease-in-out infinite;
+}
+@keyframes pulse-red {
+  0%,100% { opacity:1; box-shadow: 0 0 10px var(--urgent); }
+  50% { opacity:0.5; box-shadow: 0 0 3px var(--urgent); }
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.clock-zone { text-align: left; }
+.clock-time {
+  font-size: 18px;
+  font-weight: 300;
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+  line-height: 1.1;
+}
+.clock-date {
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+.alert-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 28px; height: 28px;
+  background: var(--urgent);
+  border-radius: 14px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #fff;
+  box-shadow: 0 0 12px var(--urgent-glow);
+  padding: 0 7px;
+  animation: badge-pulse 2s ease-in-out infinite;
+}
+@keyframes badge-pulse {
+  0%,100% { box-shadow: 0 0 12px var(--urgent-glow); }
+  50% { box-shadow: 0 0 22px var(--urgent-glow); }
+}
+
+/* ═══════════════════════════════════════
+   MAIN BODY
+═══════════════════════════════════════ */
+.main {
+  display: grid;
+  grid-template-columns: 1fr 310px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ═══════════════════════════════════════
+   CENTER PANEL
+═══════════════════════════════════════ */
+.center-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-left: 1px solid var(--border);
+}
+
+/* VIDEO */
+.video-wrapper {
+  flex: 1;
+  min-height: 0;
+  background: #000;
+  position: relative;
+  overflow: hidden;
+}
+.video-corner-tl, .video-corner-tr, .video-corner-bl, .video-corner-br {
+  position: absolute;
+  width: 18px; height: 18px;
+  z-index: 3;
+  pointer-events: none;
+}
+.video-corner-tl { top:8px; right:8px; border-top:2px solid var(--royal-glow); border-right:2px solid var(--royal-glow); }
+.video-corner-tr { top:8px; left:8px; border-top:2px solid var(--royal-glow); border-left:2px solid var(--royal-glow); }
+.video-corner-bl { bottom:8px; right:8px; border-bottom:2px solid var(--royal-glow); border-right:2px solid var(--royal-glow); }
+.video-corner-br { bottom:8px; left:8px; border-bottom:2px solid var(--royal-glow); border-left:2px solid var(--royal-glow); }
+
+.video-overlay-label {
+  position: absolute;
+  top: 14px;
+  right: 50%;
+  transform: translateX(50%);
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(4,7,15,0.82);
+  border: 1px solid var(--border-glow);
+  border-radius: 3px;
+  padding: 4px 14px;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  backdrop-filter: blur(8px);
+}
+#videoFrame {
+  width: 100%; height: 100%;
+  border: none;
+  display: block;
+}
+
+/* CHANNEL BAR */
+.channel-bar {
+  flex-shrink: 0;
+  background: var(--black-2);
+  border-top: 1px solid var(--border);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.channel-bar-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  margin-left: 8px;
+  white-space: nowrap;
+}
+.ch-btn {
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-muted);
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 5px 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+  position: relative;
+  overflow: hidden;
+}
+.ch-btn:hover {
+  border-color: var(--royal-light);
+  color: var(--text-primary);
+  background: rgba(41,82,200,0.08);
+}
+.ch-btn.active {
+  border-color: var(--royal-glow);
+  color: var(--royal-glow);
+  background: rgba(58,106,255,0.12);
+  box-shadow: 0 0 10px rgba(58,106,255,0.15), inset 0 0 8px rgba(58,106,255,0.05);
+}
+.ch-btn.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+  background: var(--royal-glow);
+  box-shadow: 0 0 6px var(--royal-glow);
+}
+
+/* BREAKING ALERTS STRIP */
+.alerts-strip {
+  flex-shrink: 0;
+  background: var(--black-3);
+  border-top: 1px solid var(--border);
+  padding: 10px 14px;
+}
+.alerts-strip-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.alerts-strip-title {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.alerts-divider {
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+.breaking-label {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--urgent);
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.alert-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.alert-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 9px 11px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.alert-card::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 3px; height: 100%;
+}
+.alert-card.lvl-1::before { background: var(--urgent); box-shadow: 0 0 8px var(--urgent-glow); }
+.alert-card.lvl-2::before { background: var(--gold); }
+.alert-card.lvl-3::before { background: var(--royal-light); }
+.alert-card:hover {
+  border-color: var(--border-glow);
+  background: var(--black-5);
+  transform: translateY(-1px);
+}
+.alert-card-src {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.alert-card.lvl-1 .alert-card-src { color: var(--urgent); }
+.alert-card.lvl-2 .alert-card-src { color: var(--gold); }
+.alert-card.lvl-3 .alert-card-src { color: var(--royal-glow); }
+.alert-card-text {
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--text-primary);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  margin-bottom: 5px;
+}
+.alert-card-time {
+  font-size: 9px;
+  color: var(--text-muted);
+}
+
+/* ═══════════════════════════════════════
+   RIGHT PANEL
+═══════════════════════════════════════ */
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--panel);
+  overflow: hidden;
+}
+.panel-header {
+  padding: 12px 14px 10px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--black-2);
+}
+.panel-header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+.panel-title {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+.panel-count {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--royal-glow);
+  background: rgba(58,106,255,0.1);
+  border: 1px solid rgba(58,106,255,0.25);
+  border-radius: 10px;
+  padding: 1px 8px;
+}
+.filter-row {
+  display: flex;
+  gap: 5px;
+}
+.flt {
+  font-size: 10px;
+  font-weight: 600;
+  font-family: var(--font-body);
+  padding: 3px 9px;
+  border-radius: 3px;
+  border: 1px solid var(--border);
+  cursor: pointer;
+  transition: all 0.15s;
+  color: var(--text-muted);
+  background: transparent;
+  letter-spacing: 0.05em;
+}
+.flt:hover { border-color: var(--royal-light); color: var(--text-secondary); }
+.flt.on-all { border-color: var(--royal-glow); color: var(--royal-glow); background: rgba(58,106,255,0.1); }
+.flt.on-urgent { border-color: var(--urgent); color: var(--urgent); background: rgba(224,53,53,0.08); }
+.flt.on-police { border-color: var(--gold); color: var(--gold); background: rgba(201,168,76,0.08); }
+
+.feed {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--black-5) transparent;
+}
+.feed::-webkit-scrollbar { width: 3px; }
+.feed::-webkit-scrollbar-track { background: transparent; }
+.feed::-webkit-scrollbar-thumb { background: var(--black-5); border-radius: 2px; }
+
+.feed-item {
+  background: var(--black-3);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 10px 12px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.feed-item::before {
+  content: '';
+  position: absolute;
+  top: 0; right: 0;
+  width: 2px; height: 100%;
+  background: var(--border);
+  transition: all 0.2s;
+}
+.feed-item.urgent::before { background: var(--urgent); box-shadow: 0 0 6px var(--urgent-glow); }
+.feed-item.police::before { background: var(--gold); }
+.feed-item:hover {
+  background: var(--black-4);
+  border-color: var(--border-glow);
+  transform: translateX(-2px);
+}
+.feed-item:hover::before { width: 3px; }
+.feed-item-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+.src-tag {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 2px 6px;
+  border-radius: 2px;
+}
+.src-ynet { background: rgba(201,168,76,0.12); color: var(--gold-light); border: 1px solid rgba(201,168,76,0.2); }
+.src-n12 { background: rgba(58,106,255,0.1); color: #6eb0ff; border: 1px solid rgba(58,106,255,0.2); }
+.src-n13 { background: rgba(29,184,122,0.1); color: #4dd9a5; border: 1px solid rgba(29,184,122,0.2); }
+.src-kan { background: rgba(224,53,53,0.1); color: #ff8080; border: 1px solid rgba(224,53,53,0.2); }
+.src-walla { background: rgba(160,100,255,0.1); color: #c89dff; border: 1px solid rgba(160,100,255,0.2); }
+.src-haaretz { background: rgba(41,82,200,0.12); color: #90b4ff; border: 1px solid rgba(41,82,200,0.25); }
+.src-maariv { background: rgba(255,140,50,0.1); color: #ffaa60; border: 1px solid rgba(255,140,50,0.2); }
+.src-jpost { background: rgba(200,200,200,0.08); color: #aabbd4; border: 1px solid rgba(200,200,200,0.12); }
+
+.feed-time { font-size: 9px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+.feed-headline {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-primary);
+  line-height: 1.45;
+  margin-bottom: 4px;
+}
+.feed-summary {
+  font-size: 10px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.feed-tags {
+  margin-top: 6px;
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.ftag {
+  font-size: 8px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 2px;
+  letter-spacing: 0.05em;
+}
+.ftag-urgent { background: rgba(224,53,53,0.12); color: #ff7070; }
+.ftag-police { background: rgba(58,106,255,0.1); color: var(--royal-glow); }
+.ftag-security { background: rgba(160,100,255,0.1); color: #c89dff; }
+.ftag-crime { background: rgba(255,140,50,0.1); color: #ffaa60; }
+.ftag-new {
+  background: rgba(29,184,122,0.15);
+  color: var(--success);
+  animation: blink-new 1.5s ease-in-out 3;
+}
+@keyframes blink-new {
+  0%,100% { opacity:1; } 50% { opacity:0.3; }
+}
+
+@keyframes item-enter {
+  from { opacity:0; transform: translateX(16px); }
+  to { opacity:1; transform: translateX(0); }
+}
+.feed-item { animation: item-enter 0.35s ease; }
+
+/* RSS STATUS */
+.rss-status {
+  padding: 8px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+  background: var(--black-2);
+}
+.rss-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  box-shadow: 0 0 6px var(--success);
+  flex-shrink: 0;
+}
+.rss-dot.loading { background: var(--gold); box-shadow: 0 0 6px var(--gold); animation: pulse 1s infinite; }
+.rss-dot.error { background: var(--urgent); box-shadow: 0 0 6px var(--urgent); }
+.rss-text {
+  font-size: 9px;
+  color: var(--text-muted);
+  letter-spacing: 0.05em;
+}
+.rss-last-update {
+  font-size: 9px;
+  color: var(--text-muted);
+  margin-right: auto;
+}
+
+/* ═══════════════════════════════════════
+   TICKER
+═══════════════════════════════════════ */
+.ticker {
+  height: 38px;
+  background: var(--black-2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+.ticker::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--royal), transparent);
+}
+.ticker-label {
+  flex-shrink: 0;
+  background: var(--royal-deep);
+  border-left: 1px solid var(--border);
+  height: 100%;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 7px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.2em;
+  color: var(--royal-glow);
+  text-transform: uppercase;
+  position: relative;
+  z-index: 2;
+}
+.ticker-label::after {
+  content: '';
+  position: absolute;
+  left: 0; top: 0; bottom: 0;
+  width: 1px;
+  background: var(--border-glow);
+  box-shadow: 0 0 8px var(--royal-glow);
+}
+.ticker-track {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+.ticker-fade-r {
+  position: absolute;
+  right: 0; top: 0; bottom: 0;
+  width: 40px;
+  background: linear-gradient(to left, var(--black-2), transparent);
+  z-index: 2;
+  pointer-events: none;
+}
+.ticker-inner {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  animation: scroll-ticker 80s linear infinite;
+  will-change: transform;
+}
+@keyframes scroll-ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.t-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 28px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+.t-src {
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 1px 5px;
+  border-radius: 2px;
+}
+.t-urgent { color: var(--text-primary); font-weight: 600; }
+.t-sep { color: var(--border-glow); font-size: 18px; }
+.t-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--royal); display: inline-block; }
+
+/* ═══════════════════════════════════════
+   MODAL
+═══════════════════════════════════════ */
+.modal-overlay {
+  display: none;
+  position: fixed; inset: 0; z-index: 200;
+  background: rgba(4,7,15,0.88);
+  backdrop-filter: blur(4px);
+  align-items: center;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-box {
+  background: var(--panel-2);
+  border: 1px solid var(--border-glow);
+  border-radius: 6px;
+  width: 520px;
+  max-width: 92vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 0 40px rgba(26,58,143,0.25), 0 0 80px rgba(4,7,15,0.8);
+  position: relative;
+}
+.modal-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--royal-glow), transparent);
+}
+.modal-header {
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+}
+.modal-src-badge {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: 3px;
+}
+.modal-meta {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 3px;
+}
+.modal-close {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  color: var(--text-muted);
+  width: 26px; height: 26px;
+  cursor: pointer;
+  font-size: 14px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.15s;
+  flex-shrink: 0;
+}
+.modal-close:hover { border-color: var(--border-glow); color: var(--text-primary); }
+.modal-body { padding: 16px 20px 18px; }
+.modal-headline {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.55;
+  margin-bottom: 12px;
+}
+.modal-text {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.75;
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+}
+.modal-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 12px;
+  font-size: 11px;
+  color: var(--royal-glow);
+  text-decoration: none;
+  border: 1px solid rgba(58,106,255,0.25);
+  border-radius: 3px;
+  padding: 4px 10px;
+  transition: all 0.15s;
+}
+.modal-link:hover { background: rgba(58,106,255,0.08); border-color: var(--royal-glow); }
+.modal-actions {
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 7px;
+}
+.m-btn {
+  font-family: var(--font-body);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 7px 13px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  background: transparent;
+}
+.m-btn:hover { border-color: var(--border-glow); color: var(--text-primary); background: rgba(41,82,200,0.06); }
+.m-btn.primary {
+  background: rgba(26,58,143,0.3);
+  border-color: var(--royal-glow);
+  color: var(--royal-glow);
+}
+.m-btn.primary:hover { background: rgba(26,58,143,0.5); }
+
+/* ═══════════════════════════════════════
+   RSS LOADING OVERLAY
+═══════════════════════════════════════ */
+.rss-loading {
+  position: absolute;
+  inset: 0; z-index: 10;
+  background: rgba(4,7,15,0.75);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  backdrop-filter: blur(2px);
+}
+.rss-loading.hidden { display: none; }
+.rss-spinner {
+  width: 32px; height: 32px;
+  border: 2px solid var(--border);
+  border-top-color: var(--royal-glow);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.rss-loading-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+}
+
+/* SCROLLBAR BODY */
+.feed-scroll-area {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+</style>
+</head>
+<body>
+
+<div class="bg-ambient"></div>
+<div class="bg-grid"></div>
+
+<div class="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="logo-zone">
+      <div class="shield">
+        <svg viewBox="0 0 38 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 2L34 8V22C34 31 27 38.5 19 42C11 38.5 4 31 4 22V8L19 2Z"
+            fill="url(#sg)" stroke="#2952c8" stroke-width="1"/>
+          <path d="M19 6L30 11V22C30 29 25 34.5 19 37C13 34.5 8 29 8 22V11L19 6Z"
+            fill="rgba(26,58,143,0.25)"/>
+          <text x="19" y="26" text-anchor="middle" font-size="13" font-weight="700"
+            fill="#3a6aff" font-family="Heebo, sans-serif">✦</text>
+          <defs>
+            <linearGradient id="sg" x1="19" y1="2" x2="19" y2="42" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#1a3a8f"/>
+              <stop offset="100%" stop-color="#0d1f5c"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div class="logo-text">
+        <div class="logo-title">מוקד דוברות</div>
+        <div class="logo-sub">מערכת ניטור תקשורת · משטרת ישראל</div>
+      </div>
+    </div>
+
+    <div class="topbar-center">
+      <div class="status-pill">
+        <div class="pulse-dot red"></div>
+        שידור חי
+      </div>
+      <div class="status-pill">
+        <div class="pulse-dot"></div>
+        RSS פעיל
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <div class="clock-zone">
+        <div class="clock-time" id="clockTime">00:00:00</div>
+        <div class="clock-date" id="clockDate">טוען...</div>
+      </div>
+      <div class="alert-badge" id="alertBadge">0</div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+
+    <!-- CENTER -->
+    <div class="center-panel">
+      <div class="video-wrapper">
+        <div class="video-corner-tl"></div>
+        <div class="video-corner-tr"></div>
+        <div class="video-corner-bl"></div>
+        <div class="video-corner-br"></div>
+        <div class="video-overlay-label">
+          <div class="pulse-dot red" style="width:6px;height:6px;"></div>
+          <span id="activeChLabel">ערוץ 12 חדשות</span>
+        </div>
+        <iframe id="videoFrame"
+          src="https://www.mako.co.il/mako-vod-live-tv/VOD-6540b8dcb64fd31006.htm"
+          allowfullscreen title="שידור חי"></iframe>
+      </div>
+
+      <div class="channel-bar">
+        <span class="channel-bar-label">ערוץ:</span>
+        <button class="ch-btn active"
+          data-src="https://www.mako.co.il/mako-vod-live-tv/VOD-6540b8dcb64fd31006.htm"
+          data-label="ערוץ 12 חדשות" onclick="switchCh(this)">ערוץ 12</button>
+        <button class="ch-btn"
+          data-src="https://www.keshet-tv.com/live"
+          data-label="ערוץ 13 חדשות" onclick="switchCh(this)">ערוץ 13</button>
+        <button class="ch-btn"
+          data-src="https://www.kan.org.il/live/"
+          data-label="כאן 11" onclick="switchCh(this)">כאן 11</button>
+        <button class="ch-btn"
+          data-src="https://www.i24news.tv/he/tv/direct"
+          data-label="i24 עברית" onclick="switchCh(this)">i24</button>
+        <button class="ch-btn"
+          data-src="https://glz.co.il/live"
+          data-label="גלי צה״ל" onclick="switchCh(this)">גל״צ</button>
+        <button class="ch-btn"
+          data-src="https://103fm.maariv.co.il/live"
+          data-label="103FM" onclick="switchCh(this)">103FM</button>
+      </div>
+
+      <div class="alerts-strip">
+        <div class="alerts-strip-header">
+          <div class="alerts-strip-title">התראות דחופות</div>
+          <div class="alerts-divider"></div>
+          <div class="breaking-label">
+            <div class="pulse-dot red" style="width:5px;height:5px;"></div>
+            BREAKING
+          </div>
+        </div>
+        <div class="alert-cards" id="alertCards">
+          <div class="alert-card lvl-1">
+            <div class="alert-card-src">טוען...</div>
+            <div class="alert-card-text">ממתין לנתוני RSS</div>
+            <div class="alert-card-time">--:--</div>
+          </div>
+          <div class="alert-card lvl-2">
+            <div class="alert-card-src">טוען...</div>
+            <div class="alert-card-text">ממתין לנתוני RSS</div>
+            <div class="alert-card-time">--:--</div>
+          </div>
+          <div class="alert-card lvl-3">
+            <div class="alert-card-src">טוען...</div>
+            <div class="alert-card-text">ממתין לנתוני RSS</div>
+            <div class="alert-card-time">--:--</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT FEED -->
+    <div class="right-panel">
+      <div class="panel-header">
+        <div class="panel-header-top">
+          <div class="panel-title">פיד הודעות</div>
+          <div class="panel-count" id="feedCount">0 פריטים</div>
+        </div>
+        <div class="filter-row">
+          <button class="flt on-all" onclick="setFilter('all',this)">הכל</button>
+          <button class="flt" onclick="setFilter('urgent',this)">דחוף</button>
+          <button class="flt" onclick="setFilter('police',this)">משטרה</button>
+          <button class="flt" onclick="setFilter('security',this)">ביטחון</button>
+        </div>
+      </div>
+
+      <div class="feed-scroll-area">
+        <div class="rss-loading" id="rssLoading">
+          <div class="rss-spinner"></div>
+          <div class="rss-loading-text">טוען ידיעות...</div>
+        </div>
+        <div class="feed" id="feedList"></div>
+      </div>
+
+      <div class="rss-status">
+        <div class="rss-dot loading" id="rssDot"></div>
+        <div class="rss-text" id="rssText">מתחבר לאתרי חדשות...</div>
+        <div class="rss-last-update" id="rssLastUpdate"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TICKER -->
+  <div class="ticker">
+    <div class="ticker-label">
+      <div class="pulse-dot" style="width:5px;height:5px;"></div>
+      בשידור
+    </div>
+    <div class="ticker-track">
+      <div class="ticker-fade-r"></div>
+      <div class="ticker-inner" id="tickerInner">
+        <span class="t-item">
+          <span class="t-src src-n12" style="padding:1px 5px;">N12</span>
+          <span>טוען ידיעות אחרונות...</span>
+          <span class="t-sep">|</span>
+        </span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modalOverlay" onclick="if(event.target===this)closeModal()">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+          <span class="modal-src-badge" id="modalSrcBadge"></span>
+          <span class="modal-meta" id="modalMeta"></span>
+        </div>
+      </div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-headline" id="modalHeadline"></div>
+      <div class="modal-text" id="modalText"></div>
+      <a class="modal-link" id="modalLink" target="_blank" rel="noopener">קרא את הכתבה המלאה ↗</a>
+    </div>
+    <div class="modal-actions">
+      <button class="m-btn primary" onclick="closeModal()">סגור</button>
+      <button class="m-btn" onclick="flagModal()">🚩 סמן כחשוב</button>
+      <button class="m-btn" onclick="copyModal()">📋 העתק כותרת</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════
+// RSS SOURCES — כתובות ה-RSS של אתרי החדשות הישראליים
+// ═══════════════════════════════════════════════════════
+const RSS_SOURCES = [
+  { id:'ynet',    label:'ynet',    cls:'src-ynet',    url:'https://www.ynet.co.il/Integration/StoryRss2.xml' },
+  { id:'n12',     label:'N12',     cls:'src-n12',     url:'https://www.mako.co.il/rss/31750a2610f26110VgnVCM1000004463fa0aRCRD.xml' },
+  { id:'kan',     label:'כאן',     cls:'src-kan',     url:'https://www.kan.org.il/rss/' },
+  { id:'walla',   label:'וואלה',   cls:'src-walla',   url:'https://rss.walla.co.il/feed/1' },
+  { id:'haaretz', label:'הארץ',    cls:'src-haaretz', url:'https://www.haaretz.co.il/cmlink/1.1599034' },
+  { id:'maariv',  label:'מעריב',   cls:'src-maariv',  url:'https://www.maariv.co.il/rss/rssChadashot' },
+];
+
+// RSS proxy — נדרש כי דפדפנים חוסמים cross-origin
+const PROXY = 'https://api.rss2json.com/v1/api.json?rss_url=';
+const PROXY2 = 'https://corsproxy.io/?';
+
+// ═══════════════════════════════════════════════════════
+// KEYWORDS לסיווג אוטומטי
+// ═══════════════════════════════════════════════════════
+const POLICE_KW = ['משטרה','שוטר','מעצר','מעצרים','עצור','פשיטה','חקירה','כוחות','מד"א','יחל','ניידת','ניידות','תחנת','פשע','שוד','אנס','רצח'];
+const URGENT_KW = ['פיגוע','דקירה','ירי','ירייה','נפגע','הרוג','פצוע','התפוצץ','פיצוץ','חטיפה','אישום','מבצע','כוננות','חירום','אזעקה','טיל','סכין','גנב','שוד','התקפה'];
+const SECURITY_KW = ['ביטחון','הגנה','צבא','צהל','שב"כ','מוסד','אש','לחימה','עצירה','גבול','רצועה','שטחים'];
+
+function classify(text) {
+  const t = (text||'').toLowerCase();
+  const isUrgent   = URGENT_KW.some(k=>t.includes(k));
+  const isPolice   = POLICE_KW.some(k=>t.includes(k));
+  const isSecurity = SECURITY_KW.some(k=>t.includes(k));
+  return { isUrgent, isPolice, isSecurity };
+}
+
+// ═══════════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════════
+let allItems = [];
+let currentFilter = 'all';
+let activeModal = null;
+const seenGuids = new Set();
+
+// ═══════════════════════════════════════════════════════
+// CLOCK
+// ═══════════════════════════════════════════════════════
+function updateClock() {
+  const now = new Date();
+  document.getElementById('clockTime').textContent = now.toLocaleTimeString('he-IL');
+  document.getElementById('clockDate').textContent = now.toLocaleDateString('he-IL',{weekday:'short',day:'2-digit',month:'2-digit',year:'numeric'});
+}
+updateClock();
+setInterval(updateClock, 1000);
+
+// ═══════════════════════════════════════════════════════
+// FETCH RSS
+// ═══════════════════════════════════════════════════════
+async function fetchSource(source) {
+  try {
+    const res = await fetch(PROXY + encodeURIComponent(source.url) + '&count=20&api_key=');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    if (!data.items || data.status === 'error') throw new Error('RSS parse fail');
+    return data.items.map(item => {
+      const guid = item.guid || item.link || item.title;
+      if (seenGuids.has(guid)) return null;
+      seenGuids.add(guid);
+      const fullText = (item.title||'') + ' ' + (item.description||'');
+      const { isUrgent, isPolice, isSecurity } = classify(fullText);
+      const pubDate = item.pubDate ? new Date(item.pubDate) : new Date();
+      return {
+        id: guid,
+        src: source.id,
+        srcLabel: source.label,
+        srcCls: source.cls,
+        headline: (item.title||'').replace(/<[^>]+>/g,'').trim(),
+        summary: (item.description||'').replace(/<[^>]+>/g,'').substring(0,200).trim(),
+        link: item.link || '#',
+        time: pubDate.toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}),
+        pubDate,
+        isUrgent, isPolice, isSecurity,
+        isNew: true
+      };
+    }).filter(Boolean);
+  } catch(e) {
+    console.warn('RSS fetch failed for', source.id, e.message);
+    return [];
+  }
+}
+
+async function fetchAllSources() {
+  setRssStatus('loading', 'מתחבר לאתרי חדשות...');
+  const results = await Promise.allSettled(RSS_SOURCES.map(fetchSource));
+  const newItems = results
+    .filter(r => r.status === 'fulfilled')
+    .flatMap(r => r.value)
+    .sort((a,b) => b.pubDate - a.pubDate);
+
+  if (newItems.length > 0) {
+    allItems = [...newItems, ...allItems.filter(i=>!i.isNew)].slice(0,120);
+    allItems.forEach(i => i.isNew = false);
+    renderFeed();
+    renderTicker();
+    renderAlerts();
+    updateBadge();
+  }
+
+  const ok = results.filter(r=>r.status==='fulfilled' && r.value.length>0).length;
+  setRssStatus(
+    ok > 0 ? 'ok' : 'error',
+    ok > 0 ? `${ok} מקורות פעילים · ${newItems.length} ידיעות חדשות` : 'שגיאה בטעינת RSS',
+    'עודכן: ' + new Date().toLocaleTimeString('he-IL')
+  );
+  document.getElementById('rssLoading').classList.add('hidden');
+}
+
+function setRssStatus(state, text, right='') {
+  const dot = document.getElementById('rssDot');
+  dot.className = 'rss-dot' + (state==='loading'?' loading':state==='error'?' error':'');
+  document.getElementById('rssText').textContent = text;
+  document.getElementById('rssLastUpdate').textContent = right;
+}
+
+// ═══════════════════════════════════════════════════════
+// FALLBACK DEMO DATA (כשאין גישה לאינטרנט)
+// ═══════════════════════════════════════════════════════
+function loadDemoData() {
+  const DEMO = [
+    { src:'ynet', srcLabel:'ynet', srcCls:'src-ynet', headline:'פיצוץ בסמוך למתחם מסחרי בחיפה — כוחות הוזנקו לאתר', summary:'כוחות משטרה ומד"א הוזנקו לאחר דיווחים על פיצוץ חזק. אין עדיין נפגעים ידועים.', isUrgent:true, isPolice:true, isSecurity:false },
+    { src:'n12', srcLabel:'N12', srcCls:'src-n12', headline:'מעצר בחשד לאיומים על קצין בכיר במשטרה', summary:'החשוד, בן 34, עצור לחקירה. יחידת הסייבר המשטרתית מטפלת בעניין.', isUrgent:true, isPolice:true, isSecurity:false },
+    { src:'kan', srcLabel:'כאן', srcCls:'src-kan', headline:'שר הפנים מביע עמדה על מדיניות אכיפת ההגירה', summary:'הצהרה רשמית בפני ועדת הפנים של הכנסת.', isUrgent:false, isPolice:false, isSecurity:true },
+    { src:'haaretz', srcLabel:'הארץ', srcCls:'src-haaretz', headline:'ביקורת על נהלי הגשת תלונות כנגד שוטרים', summary:'כתבת חקירה על קשיים שנתקלים בהם אזרחים.', isUrgent:false, isPolice:true, isSecurity:false },
+    { src:'walla', srcLabel:'וואלה', srcCls:'src-walla', headline:'תאונת שרשרת בכביש 2 — 3 נפגעים קל', summary:'המשטרה סגרה נתיב בכיוון תל אביב לצורך פינוי פצועים.', isUrgent:false, isPolice:true, isSecurity:false },
+    { src:'n12', srcLabel:'N12', srcCls:'src-n12', headline:'פעילות יח"ל: פשיטה על מחסן נשק בלתי חוקי בגליל', summary:'נתפסו עשרות כלי נשק. שלושה חשודים הובאו לחקירה.', isUrgent:true, isPolice:true, isSecurity:true },
+    { src:'ynet', srcLabel:'ynet', srcCls:'src-ynet', headline:'מרדף אחרי חשוד בשוד בנק בראשון לציון', summary:'שוד מזוין בסניף בנק, המשטרה סורקת את האזור.', isUrgent:true, isPolice:true, isSecurity:false },
+    { src:'maariv', srcLabel:'מעריב', srcCls:'src-maariv', headline:'פגישת ראשי הפצ"ר עם שר הביטחון לגיבוש תוכנית', summary:'דיון בצמצום אלימות בחברה הערבית וחיזוק שיתוף פעולה.', isUrgent:false, isPolice:false, isSecurity:true },
+  ];
+  const now = new Date();
+  allItems = DEMO.map((d,i) => ({
+    ...d,
+    id: 'demo-'+i,
+    link: '#',
+    time: new Date(now - i*8*60000).toLocaleTimeString('he-IL',{hour:'2-digit',minute:'2-digit'}),
+    pubDate: new Date(now - i*8*60000),
+    isNew: false
+  }));
+  renderFeed();
+  renderTicker();
+  renderAlerts();
+  updateBadge();
+  setRssStatus('error', 'נתוני דמו — בדפדפן מקומי RSS חסום, הכשר GitHub Pages', '');
+  document.getElementById('rssLoading').classList.add('hidden');
+}
+
+// ═══════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════
+function getFiltered() {
+  if (currentFilter === 'urgent')   return allItems.filter(i=>i.isUrgent);
+  if (currentFilter === 'police')   return allItems.filter(i=>i.isPolice);
+  if (currentFilter === 'security') return allItems.filter(i=>i.isSecurity);
+  return allItems;
+}
+
+function renderFeed() {
+  const items = getFiltered();
+  document.getElementById('feedCount').textContent = items.length + ' פריטים';
+  const html = items.map(item => {
+    const tags = [];
+    if (item.isUrgent)   tags.push('<span class="ftag ftag-urgent">דחוף</span>');
+    if (item.isPolice)   tags.push('<span class="ftag ftag-police">משטרה</span>');
+    if (item.isSecurity) tags.push('<span class="ftag ftag-security">ביטחון</span>');
+    const cls = item.isUrgent ? 'urgent' : item.isPolice ? 'police' : '';
+    const safeId = item.id.replace(/'/g,"\\'");
+    return `<div class="feed-item ${cls}" onclick="openModal('${safeId}')">
+      <div class="feed-item-top">
+        <span class="src-tag ${item.srcCls}">${item.srcLabel}</span>
+        <span class="feed-time">${item.time}</span>
+      </div>
+      <div class="feed-headline">${item.headline}</div>
+      <div class="feed-summary">${item.summary}</div>
+      ${tags.length ? '<div class="feed-tags">'+tags.join('')+'</div>' : ''}
+    </div>`;
+  }).join('');
+  document.getElementById('feedList').innerHTML = html || '<div style="padding:20px;text-align:center;color:var(--text-muted);font-size:12px;">אין פריטים להצגה</div>';
+}
+
+function renderAlerts() {
+  const urgent = allItems.filter(i=>i.isUrgent).slice(0,3);
+  const levels = ['lvl-1','lvl-2','lvl-3'];
+  if (!urgent.length) return;
+  document.getElementById('alertCards').innerHTML = urgent.map((item,i) => {
+    const safeId = item.id.replace(/'/g,"\\'");
+    return `<div class="alert-card ${levels[i]||'lvl-3'}" onclick="openModal('${safeId}')">
+      <div class="alert-card-src">${item.srcLabel}</div>
+      <div class="alert-card-text">${item.headline}</div>
+      <div class="alert-card-time">${item.time}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderTicker() {
+  const items = allItems.slice(0,20);
+  const html = items.map(item =>
+    `<span class="t-item">
+      <span class="t-src ${item.srcCls}" style="padding:1px 5px;border-radius:2px;">${item.srcLabel}</span>
+      <span class="${item.isUrgent?'t-urgent':''}">${item.headline}</span>
+      <span class="t-sep">|</span>
+    </span>`
+  ).join('');
+  document.getElementById('tickerInner').innerHTML = html + html;
+}
+
+function updateBadge() {
+  document.getElementById('alertBadge').textContent = allItems.filter(i=>i.isUrgent).length;
+}
+
+// ═══════════════════════════════════════════════════════
+// FILTER
+// ═══════════════════════════════════════════════════════
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.flt').forEach(b => b.className='flt');
+  btn.classList.add('on-' + f);
+  renderFeed();
+}
+
+// ═══════════════════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════════════════
+function openModal(id) {
+  const item = allItems.find(i=>i.id===id);
+  if (!item) return;
+  activeModal = item;
+  document.getElementById('modalSrcBadge').textContent = item.srcLabel;
+  document.getElementById('modalSrcBadge').className = 'modal-src-badge ' + item.srcCls;
+  document.getElementById('modalMeta').textContent = item.time + ' · ' + item.pubDate.toLocaleDateString('he-IL');
+  document.getElementById('modalHeadline').textContent = item.headline;
+  document.getElementById('modalText').textContent = item.summary || 'אין תיאור נוסף';
+  const link = document.getElementById('modalLink');
+  link.href = item.link !== '#' ? item.link : '#';
+  link.style.display = item.link !== '#' ? '' : 'none';
+  document.getElementById('modalOverlay').classList.add('open');
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
+function flagModal() { if(activeModal) alert('✓ הפריט סומן כחשוב:\n' + activeModal.headline); }
+function copyModal() {
+  if(activeModal) {
+    navigator.clipboard.writeText(activeModal.headline).then(()=>alert('הועתק!'));
+  }
+}
+
+// ═══════════════════════════════════════════════════════
+// CHANNEL SWITCH
+// ═══════════════════════════════════════════════════════
+function switchCh(btn) {
+  document.querySelectorAll('.ch-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('videoFrame').src = btn.dataset.src;
+  document.getElementById('activeChLabel').textContent = btn.dataset.label;
+}
+
+// ═══════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════
+async function init() {
+  await fetchAllSources();
+  // אם לא הגיעו נתונים אמיתיים, טען דמו
+  if (allItems.length === 0) loadDemoData();
+  // רענון כל 3 דקות
+  setInterval(async () => {
+    await fetchAllSources();
+  }, 3 * 60 * 1000);
+}
+
+init();
+</script>
+</body>
+</html>
