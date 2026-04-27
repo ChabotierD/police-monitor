@@ -1,0 +1,26 @@
+{
+  "name": "מוקד דוברות מחוז מרכז",
+  "short_name": "דוברות מרכז",
+  "description": "מערכת ניטור תקשורת - דוברות משטרת ישראל",
+  "start_url": "./mobile.html",
+  "display": "standalone",
+  "background_color": "#03050e",
+  "theme_color": "#03050e",
+  "orientation": "portrait",
+  "lang": "he",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
