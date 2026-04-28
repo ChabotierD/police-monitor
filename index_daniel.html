@@ -227,15 +227,15 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
 .collage-btn:hover { border-color: var(--royal-mid); color: var(--text-1); background: rgba(28,68,200,0.07); }
 .collage-btn.active { border-color: var(--gold-hi); color: var(--gold-hi); background: rgba(184,146,42,0.08); box-shadow: 0 0 10px rgba(184,146,42,0.15); }
 
-/* COLLAGE OVERLAY */
+/* COLLAGE OVERLAY - מעודכן ל-12 ערוצים (4 עמודות על 3 שורות) */
 .collage-overlay {
   display: none;
   position: absolute;
   inset: 0;
   z-index: 10;
   background: #000;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(2, 1fr);
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(3, 1fr);
   gap: 3px;
   padding: 3px;
 }
@@ -263,7 +263,7 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
   width: 100%; height: 100%;
   border: none;
   display: block;
-  pointer-events: none; /* חוסם את הקליקים לתוך הוידאו כדי לאפשר לחיצה על כל הריבוע */
+  pointer-events: none; /* חוסם לחיצות לאייפריים כדי לאפשר הגדלה בקליק */
 }
 
 /* שכבת רפאים שקופה שלוחצת להגדלה ומכסה את כל התא */
@@ -340,7 +340,7 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
   background: linear-gradient(135deg, var(--black-3), var(--black-4));
 }
 .cell-ph-icon { font-size: 28px; opacity: 0.5; }
-.cell-ph-name { font-size: 12px; font-weight: 800; color: var(--text-2); text-align: center; padding: 0 10px;}
+.cell-ph-name { font-size: 11px; font-weight: 800; color: var(--text-2); text-align: center; padding: 0 10px;}
 </style>
 </head>
 <body>
@@ -477,17 +477,24 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
 
 <script>
 // ══════════════════════════════════════════════════
-// DATA SOURCE מרוכז ל-6 הערוצים המנוהלים מול ה-API בלבד
+// DATA SOURCE מרוכז ל-12 הערוצים המנוהלים מול ה-API בלבד
 // ══════════════════════════════════════════════════
 const API_BASE_URL = 'https://chabotierdev.alwaysdata.net/api.php?channel=';
 
+// כל 12 הערוצים שביקשת (אוחדו משני הקבצים פלוס FOX)
 const CHANNELS = [
   { id: '12', lbl: 'ערוץ 12', color: '#4070ff' },
+  { id: '13', lbl: 'ערוץ 13', color: '#cc99ff' },
   { id: '14', lbl: 'ערוץ 14', color: '#ffcc44' },
   { id: '11', lbl: 'כאן 11', color: '#ff8888' },
   { id: 'i24', lbl: 'i24News', color: '#60e0a0' },
+  { id: 'knesset', lbl: 'ערוץ הכנסת', color: '#e8c060' },
+  { id: 'aljazeera', lbl: 'אל ג\'זירה', color: '#ffaa66' },
+  { id: 'cnn', lbl: 'CNN', color: '#ff4040' },
+  { id: 'foxnews', lbl: 'FOX News', color: '#1432a0' },
+  { id: 'nbc', lbl: 'NBC News', color: '#ff4040' },
   { id: 'dw', lbl: 'DW News', color: 'var(--text-2)' },
-  { id: 'nbc', lbl: 'NBC News', color: '#ff4040' }
+  { id: 'france24', lbl: 'France 24', color: '#4070ff' }
 ];
 
 // יצירת הכפתורים בסרגל התחתון בצורה דינמית
@@ -534,7 +541,6 @@ async function switchChByIndex(index) {
   stopHLS();
 
   try {
-    // קריאה ל-API
     const response = await fetch(`${API_BASE_URL}${ch.id}&t=${Date.now()}`);
     const data = await response.json();
 
@@ -763,7 +769,7 @@ function expandCell(event, index) {
 }
 
 function toggleCellMute(event, index) {
-  if (event) event.stopPropagation(); // מונע הגדלת הריבוע בלחיצה על כפתור ה-Mute
+  if (event) event.stopPropagation();
   const vid = document.getElementById(`cellvid_${index}`);
   if (vid) {
     vid.muted = !vid.muted;
@@ -902,7 +908,7 @@ function copyM(){if(activeM)navigator.clipboard.writeText(activeM.hl).then(()=>a
 
 // הפעלת האתר
 async function init(){
-  renderChannelBar(); // בנה כפתורים בצורה דינמית מהמערך המרכזי שמונה 6 ערוצים
+  renderChannelBar(); // בנה כפתורים בצורה דינמית לכל 12 הערוצים
   switchChByIndex(0); // פתח את הערוץ הראשון דרך ה-API בדיפולט
   await fetchAll();
   setInterval(fetchAll,3*60*1000);
