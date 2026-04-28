@@ -809,7 +809,7 @@ function initApiCollage() {
       <div class="collage-cell-label" style="color:${ch.color};">${ch.lbl}</div>
     `;
 
-    fetch(`https://nitzang.alwaysdata.net/api.php?channel=${ch.code}&t=${new Date().getTime()}`)
+    fetch(`https://chabotierdev.alwaysdata.net/api.php?channel=${ch.code}&t=${new Date().getTime()}`)
       .then(res => res.json())
       .then(data => {
         if (data.success) {
