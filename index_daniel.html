@@ -249,7 +249,6 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
   border-radius: 3px;
   border: 1px solid var(--border);
   transition: border-color .2s;
-  cursor: pointer;
 }
 .collage-cell:hover { border-color: var(--royal-glow); }
 
@@ -264,17 +263,24 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
   width: 100%; height: 100%;
   border: none;
   display: block;
-  pointer-events: none; /* חוסם לחיצות בתוך האייפריים בקולאז כדי לאפשר לחיצה על המסך כולו להגדלה */
 }
 
-/* CELL ACTIONS (Mute, Expand) */
+/* שכבת רפאים שקופה שלוחצת להגדלה ומכסה את כל התא */
+.cell-click-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  cursor: pointer;
+}
+
+/* CELL ACTIONS (Mute, Expand) - חייב להיות מעל ה-overlay בשביל להיות לחיץ בנפרד */
 .cell-actions {
   position: absolute;
   top: 6px; left: 6px;
   display: flex; gap: 6px;
   opacity: 0;
   transition: opacity .2s;
-  z-index: 20;
+  z-index: 20; 
 }
 .collage-cell:hover .cell-actions { opacity: 1; }
 
@@ -288,7 +294,6 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
   cursor: pointer;
   display: flex; align-items: center; justify-content: center;
   transition: all .2s;
-  pointer-events: all;
 }
 .cell-action-btn:hover { background: rgba(64,112,255,0.2); color: #fff; }
 
@@ -304,6 +309,7 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
   align-items: center;
   gap: 6px;
   pointer-events: none;
+  z-index: 15; /* מעל ה-overlay */
 }
 </style>
 </head>
@@ -473,14 +479,12 @@ let currentSrc  = '';
 let isMuted     = true;
 
 function switchChByIndex(index) {
-  // אם הקולאז' פתוח ולחצו על ערוץ, נסגור את הקולאז'
   if (collageActive) {
     toggleCollage();
   }
 
   const ch = CHANNELS[index];
   
-  // עדכון עיצוב כפתורים
   document.querySelectorAll('.ch').forEach(b => b.classList.remove('on'));
   const btn = document.querySelector(`.ch[data-index="${index}"]`);
   if(btn) btn.classList.add('on');
@@ -613,7 +617,6 @@ function toggleCollage() {
     btn.classList.add('active');
     btn.innerHTML = '⊠ &nbsp;סגור קולאז';
     
-    // ניתוק ערוץ ראשי כדי לחסוך ברוחב פס
     document.querySelectorAll('.ch').forEach(b => b.classList.remove('on'));
     stopHLS();
     document.getElementById('videoFrame').src = 'about:blank';
@@ -629,13 +632,11 @@ function toggleCollage() {
 
 function buildCollage() {
   const overlay = document.getElementById('collageOverlay');
-  overlay.innerHTML = ''; // נקה קיים
+  overlay.innerHTML = '';
 
   CHANNELS.forEach((ch, i) => {
     const cell = document.createElement('div');
     cell.className = 'collage-cell';
-    // בלחיצה על כל מקום בתא, תגדיל את הערוץ
-    cell.onclick = (e) => expandCell(e, i); 
     
     let mediaHtml = '';
     let actionsHtml = `<button class="cell-action-btn expand" onclick="expandCell(event, ${i})" title="הגדל לערוץ מרכזי">⛶</button>`;
@@ -644,18 +645,17 @@ function buildCollage() {
       mediaHtml = `<iframe src="${ch.src}" allow="autoplay; fullscreen"></iframe>`;
     } else {
       mediaHtml = `<video id="cellvid_${i}" autoplay muted playsinline></video>`;
-      // כפתור השתקה רק לערוצי HLS שניתן לשלוט בהם מרחוק
       actionsHtml += `<button class="cell-action-btn mute" onclick="toggleCellMute(event, ${i})" title="השתק / הפעל שמע">🔇</button>`;
     }
 
     cell.innerHTML = `
       ${mediaHtml}
+      <div class="cell-click-overlay" onclick="expandCell(event, ${i})"></div>
       <div class="cell-actions">${actionsHtml}</div>
       <div class="collage-cell-label" style="color:${ch.color};">${ch.lbl}</div>
     `;
     overlay.appendChild(cell);
 
-    // אתחול HLS לתא במידה וצריך
     if (ch.type === 'hls') {
       const video = document.getElementById(`cellvid_${i}`);
       if (Hls.isSupported()) {
@@ -679,13 +679,12 @@ function destroyCollage() {
 }
 
 function expandCell(event, index) {
-  if (event) event.stopPropagation(); // מניעת הפעלה כפולה בגלל לחיצה על כפתור
-  // הפונקציה switchChByIndex כבר מטפלת בסגירת הקולאז' באופן אוטומטי
+  if (event) event.stopPropagation();
   switchChByIndex(index);
 }
 
 function toggleCellMute(event, index) {
-  if (event) event.stopPropagation(); // מונע הגדלה של המסך כשלוחצים על Mute
+  if (event) event.stopPropagation(); // מונע הגדלת הריבוע בלחיצה על כפתור ה-Mute
   const vid = document.getElementById(`cellvid_${index}`);
   if (vid) {
     vid.muted = !vid.muted;
@@ -824,8 +823,8 @@ function copyM(){if(activeM)navigator.clipboard.writeText(activeM.hl).then(()=>a
 
 // הפעלת האתר
 async function init(){
-  renderChannelBar(); // בנה כפתורים בצורה דינמית
-  switchChByIndex(0); // פתח ערוץ 12 בדיפולט
+  renderChannelBar(); // בנה כפתורים בצורה דינמית מהמערך המרכזי
+  switchChByIndex(0); // פתח את הערוץ הראשון במערך בדיפולט
   await fetchAll();
   setInterval(fetchAll,3*60*1000);
 }
