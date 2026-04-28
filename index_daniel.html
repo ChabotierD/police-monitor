@@ -263,6 +263,7 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
   width: 100%; height: 100%;
   border: none;
   display: block;
+  pointer-events: none; /* חוסם את הקליקים לתוך הוידאו כדי לאפשר לחיצה על כל הריבוע */
 }
 
 /* שכבת רפאים שקופה שלוחצת להגדלה ומכסה את כל התא */
@@ -273,7 +274,7 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
   cursor: pointer;
 }
 
-/* CELL ACTIONS (Mute, Expand) - חייב להיות מעל ה-overlay בשביל להיות לחיץ בנפרד */
+/* CELL ACTIONS (Mute, Expand) - מעל ה-overlay בשביל להיות לחיץ בנפרד */
 .cell-actions {
   position: absolute;
   top: 6px; left: 6px;
@@ -311,6 +312,35 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
   pointer-events: none;
   z-index: 15; /* מעל ה-overlay */
 }
+
+/* מצבי טעינה לתאים */
+.cell-loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(3,5,14,0.7);
+  z-index: 2;
+}
+.cell-spinner {
+  width: 24px; height: 24px;
+  border: 2px solid var(--border);
+  border-top-color: var(--royal-glow);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+}
+.cell-placeholder {
+  width: 100%; height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: linear-gradient(135deg, var(--black-3), var(--black-4));
+}
+.cell-ph-icon { font-size: 28px; opacity: 0.5; }
+.cell-ph-name { font-size: 12px; font-weight: 800; color: var(--text-2); text-align: center; padding: 0 10px;}
 </style>
 </head>
 <body>
@@ -342,7 +372,7 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
         <div class="vc bl"></div><div class="vc br"></div>
         <div class="vid-label">
           <div class="pdot r" style="width:6px;height:6px;"></div>
-          <span id="chLabel">ערוץ 12</span>
+          <span id="chLabel">טוען ערוץ...</span>
         </div>
 
         
@@ -361,7 +391,7 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
 
         <div class="hls-loading" id="hlsLoading">
           <div class="spinner"></div>
-          <div class="hls-loading-txt">טוען שידור חי...</div>
+          <div class="hls-loading-txt">מתחבר לשרת...</div>
         </div>
 
         <div class="vid-error" id="vidError">
@@ -447,15 +477,17 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
 
 <script>
 // ══════════════════════════════════════════════════
-// DATA SOURCE מרוכז לכל הערוצים 
+// DATA SOURCE מרוכז ל-6 הערוצים המנוהלים מול ה-API בלבד
 // ══════════════════════════════════════════════════
+const API_BASE_URL = 'https://chabotierdev.alwaysdata.net/api.php?channel=';
+
 const CHANNELS = [
-  { lbl: 'ערוץ 12', type: 'iframe', src: 'https://www.mako.co.il/AjaxPage?jspName=embedHTML5video.jsp&galleryChannelId=3bf5c3a8e967f510VgnVCM2000002a0c10acRCRD&videoChannelId=8bf955222beab610VgnVCM100000700a10acRCRD&vcmid=1e2258089b67f510VgnVCM2000002a0c10acRCRD', color: '#4070ff' },
-  { lbl: 'ערוץ 14', type: 'iframe', src: 'https://ok.ru/videoembed/10460920618703?nochat=1&quality=high', color: '#ffcc44' },
-  { lbl: 'כאן 11', type: 'hls', src: 'https://n-121-7.il.cdn-redge.media/livehls/oil/kancdn-live/live/kan11/live.livx/playlist.m3u8?renditions&fmp4', color: '#ff8888' },
-  { lbl: 'ערוץ 13', type: 'iframe', src: 'https://www.keshet-tv.com/live', color: '#cc99ff' },
-  { lbl: 'i24', type: 'hls', src: 'https://fastly.live.brightcove.com/6386790215112/eu-central-1/5377161796001/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJob3N0IjoiZXJmajYzLmVncmVzcy53YzQ3bTEiLCJhY2NvdW50X2lkIjoiNTM3NzE2MTc5NjAwMSIsImVobiI6ImZhc3RseS5saXZlLmJyaWdodGNvdmUuY29tIiwiaXNzIjoiYmxpdmUtcGxheWJhY2stc291cmNlLWFwaSIsInN1YiI6InBhdGhtYXB0b2tlbiIsImF1ZCI6WyI1Mzc3MTYxNzk2MDAxIl0sImptaIjoiNjM4Njc5MDIxNTExMiJ9.8ZawImK7DfcrrXeAT2OVZ62qQJrJiBaoc7Y1DNNq1bg/playlist-hls.m3u8', color: '#60e0a0' },
-  { lbl: 'גל"צ', type: 'iframe', src: 'https://glz.co.il/live', color: 'var(--text-2)' }
+  { id: '12', lbl: 'ערוץ 12', color: '#4070ff' },
+  { id: '14', lbl: 'ערוץ 14', color: '#ffcc44' },
+  { id: '11', lbl: 'כאן 11', color: '#ff8888' },
+  { id: 'i24', lbl: 'i24News', color: '#60e0a0' },
+  { id: 'dw', lbl: 'DW News', color: 'var(--text-2)' },
+  { id: 'nbc', lbl: 'NBC News', color: '#ff4040' }
 ];
 
 // יצירת הכפתורים בסרגל התחתון בצורה דינמית
@@ -471,14 +503,12 @@ function renderChannelBar() {
 }
 
 // ══════════════════════════════════════════════════
-// VIDEO PLAYER — MAIN VIEWER
+// VIDEO PLAYER — MAIN VIEWER (תמיד ניגש ל-API)
 // ══════════════════════════════════════════════════
 let hlsInstance = null;
-let currentType = 'iframe';
-let currentSrc  = '';
-let isMuted     = true;
+let isMuted = true;
 
-function switchChByIndex(index) {
+async function switchChByIndex(index) {
   if (collageActive) {
     toggleCollage();
   }
@@ -489,38 +519,53 @@ function switchChByIndex(index) {
   const btn = document.querySelector(`.ch[data-index="${index}"]`);
   if(btn) btn.classList.add('on');
 
-  currentSrc  = ch.src;
-  currentType = ch.type;
   document.getElementById('chLabel').textContent = ch.lbl;
   hideError();
 
-  if (ch.type === 'hls') {
-    loadHLS(ch.src);
-  } else {
-    stopHLS();
-    showIframe(ch.src);
+  // מציג ספינר ועוצר שידור קודם
+  document.getElementById('videoFrame').style.display = 'none';
+  document.getElementById('videoFrame').src = 'about:blank';
+  document.getElementById('hlsVideo').classList.remove('active');
+  document.getElementById('hlsControls').classList.remove('show');
+  
+  const hlsLoader = document.getElementById('hlsLoading');
+  hlsLoader.classList.add('show');
+  document.querySelector('.hls-loading-txt').textContent = 'מייבא נתונים מהשרת...';
+  stopHLS();
+
+  try {
+    // קריאה ל-API
+    const response = await fetch(`${API_BASE_URL}${ch.id}&t=${Date.now()}`);
+    const data = await response.json();
+
+    if (data.success) {
+      if (data.type === 'hls') {
+        loadHLS(data.url);
+      } else if (data.type === 'iframe') {
+        showIframe(data.url);
+      }
+    } else {
+      hlsLoader.classList.remove('show');
+      showError(data.message || 'הערוץ לא זמין כרגע דרך השרת', '');
+    }
+  } catch (error) {
+    hlsLoader.classList.remove('show');
+    showError('שגיאת תקשורת מול ה-API', '');
   }
 }
 
 // ── IFRAME MODE
 function showIframe(src) {
+  document.getElementById('hlsLoading').classList.remove('show');
   document.getElementById('videoFrame').style.display = 'block';
   document.getElementById('videoFrame').src = src;
-  document.getElementById('hlsVideo').classList.remove('active');
-  document.getElementById('hlsControls').classList.remove('show');
-  document.getElementById('hlsLoading').classList.remove('show');
 }
 
 // ── HLS MODE
 function loadHLS(src) {
-  document.getElementById('videoFrame').style.display = 'none';
-  document.getElementById('videoFrame').src = 'about:blank';
   const video = document.getElementById('hlsVideo');
   video.classList.add('active');
-  document.getElementById('hlsLoading').classList.add('show');
-  document.getElementById('hlsControls').classList.remove('show');
-
-  stopHLS();
+  document.querySelector('.hls-loading-txt').textContent = 'טוען שידור חי...';
 
   if (Hls.isSupported()) {
     hlsInstance = new Hls({ enableWorker: true, lowLatencyMode: true, backBufferLength: 90 });
@@ -594,7 +639,7 @@ function toggleFS() {
 
 function showError(txt, src) {
   document.getElementById('vidErrorTxt').textContent = txt;
-  document.getElementById('vidErrorLink').href = src || currentSrc;
+  document.getElementById('vidErrorLink').href = src || '#';
   document.getElementById('vidError').classList.add('show');
 }
 function hideError() {
@@ -602,7 +647,7 @@ function hideError() {
 }
 
 // ══════════════════════════════════════════════════
-// ── COLLAGE MODE 
+// ── COLLAGE MODE (ניגש ל-API עבור כל התאים)
 // ══════════════════════════════════════════════════
 let collageActive = false;
 const collageHlsInstances = {};
@@ -638,37 +683,71 @@ function buildCollage() {
     const cell = document.createElement('div');
     cell.className = 'collage-cell';
     
-    let mediaHtml = '';
-    let actionsHtml = `<button class="cell-action-btn expand" onclick="expandCell(event, ${i})" title="הגדל לערוץ מרכזי">⛶</button>`;
-
-    if (ch.type === 'iframe') {
-      mediaHtml = `<iframe src="${ch.src}" allow="autoplay; fullscreen"></iframe>`;
-    } else {
-      mediaHtml = `<video id="cellvid_${i}" autoplay muted playsinline></video>`;
-      actionsHtml += `<button class="cell-action-btn mute" onclick="toggleCellMute(event, ${i})" title="השתק / הפעל שמע">🔇</button>`;
-    }
-
+    // מצב טעינה התחלתי
     cell.innerHTML = `
-      ${mediaHtml}
-      <div class="cell-click-overlay" onclick="expandCell(event, ${i})"></div>
-      <div class="cell-actions">${actionsHtml}</div>
+      <div class="cell-loading"><div class="cell-spinner"></div></div>
       <div class="collage-cell-label" style="color:${ch.color};">${ch.lbl}</div>
     `;
     overlay.appendChild(cell);
 
-    if (ch.type === 'hls') {
-      const video = document.getElementById(`cellvid_${i}`);
-      if (Hls.isSupported()) {
-        const hls = new Hls({ enableWorker:true, lowLatencyMode:true, maxBufferLength:10 });
-        hls.loadSource(ch.src);
-        hls.attachMedia(video);
-        hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
-        collageHlsInstances[i] = hls;
-      } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
-        video.src = ch.src;
-        video.play();
-      }
-    }
+    // משיכת הקישור מה-API בצורה דינמית
+    fetch(`${API_BASE_URL}${ch.id}&t=${Date.now()}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          let mediaHtml = '';
+          let actionsHtml = `<button class="cell-action-btn expand" onclick="expandCell(event, ${i})" title="הגדל לערוץ מרכזי">⛶</button>`;
+
+          if (data.type === 'iframe') {
+            mediaHtml = `<iframe src="${data.url}" allow="autoplay; fullscreen" style="pointer-events:none;"></iframe>`;
+          } else if (data.type === 'hls') {
+            mediaHtml = `<video id="cellvid_${i}" autoplay muted playsinline></video>`;
+            actionsHtml += `<button class="cell-action-btn mute" onclick="toggleCellMute(event, ${i})" title="השתק / הפעל שמע">🔇</button>`;
+          }
+
+          cell.innerHTML = `
+            ${mediaHtml}
+            <div class="cell-click-overlay" onclick="expandCell(event, ${i})"></div>
+            <div class="cell-actions">${actionsHtml}</div>
+            <div class="collage-cell-label" style="color:${ch.color};">${ch.lbl}</div>
+          `;
+
+          if (data.type === 'hls') {
+            const video = document.getElementById(`cellvid_${i}`);
+            if (Hls.isSupported()) {
+              const hls = new Hls({ enableWorker:true, lowLatencyMode:true, maxBufferLength:10 });
+              hls.loadSource(data.url);
+              hls.attachMedia(video);
+              hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
+              collageHlsInstances[i] = hls;
+            } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
+              video.src = data.url;
+              video.play();
+            }
+          }
+        } else {
+          // טיפול בשגיאה ספציפית מה-API
+          cell.innerHTML = `
+            <div class="cell-placeholder">
+              <div class="cell-ph-icon">📺</div>
+              <div class="cell-ph-name" style="color:#ff4040;">שגיאה: ${data.message}</div>
+            </div>
+            <div class="cell-click-overlay" onclick="expandCell(event, ${i})"></div>
+            <div class="collage-cell-label" style="color:${ch.color};">${ch.lbl}</div>
+          `;
+        }
+      })
+      .catch(err => {
+        // טיפול בשגיאת תקשורת
+        cell.innerHTML = `
+          <div class="cell-placeholder">
+            <div class="cell-ph-icon">⚠️</div>
+            <div class="cell-ph-name" style="color:#ff4040;">שגיאת תקשורת</div>
+          </div>
+          <div class="cell-click-overlay" onclick="expandCell(event, ${i})"></div>
+          <div class="collage-cell-label" style="color:${ch.color};">${ch.lbl}</div>
+        `;
+      });
   });
 }
 
@@ -823,8 +902,8 @@ function copyM(){if(activeM)navigator.clipboard.writeText(activeM.hl).then(()=>a
 
 // הפעלת האתר
 async function init(){
-  renderChannelBar(); // בנה כפתורים בצורה דינמית מהמערך המרכזי
-  switchChByIndex(0); // פתח את הערוץ הראשון במערך בדיפולט
+  renderChannelBar(); // בנה כפתורים בצורה דינמית מהמערך המרכזי שמונה 6 ערוצים
+  switchChByIndex(0); // פתח את הערוץ הראשון דרך ה-API בדיפולט
   await fetchAll();
   setInterval(fetchAll,3*60*1000);
 }
