@@ -176,7 +176,7 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
 .rss-txt{font-size:9px;font-weight:600;color:var(--text-3);}
 .rss-upd{font-size:9px;color:var(--text-3);margin-right:auto;}
 .ticker{height:40px;background:linear-gradient(180deg,var(--black-2),var(--black));border-top:1px solid var(--border);display:flex;align-items:center;overflow:hidden;flex-shrink:0;position:relative;}
-.ticker::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--royal-mid) 30%,var(--gold-hi) 50%,var(--royal-mid) 70%,transparent);opacity:0.45;}
+.ticker::before{content:'absolute';top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--royal-mid) 30%,var(--gold-hi) 50%,var(--royal-mid) 70%,transparent);opacity:0.45;}
 .ticker-lbl{flex-shrink:0;height:100%;background:linear-gradient(135deg,rgba(8,15,56,0.9),rgba(20,50,160,0.5));border-left:1px solid var(--border-hi);display:flex;align-items:center;padding:0 16px;gap:8px;font-size:9px;font-weight:800;letter-spacing:0.22em;color:var(--royal-glow);text-transform:uppercase;z-index:2;}
 .ticker-track{flex:1;overflow:hidden;position:relative;}
 .ticker-fade{position:absolute;left:0;top:0;bottom:0;width:40px;z-index:2;pointer-events:none;background:linear-gradient(to right,var(--black-2),transparent);}
@@ -375,7 +375,6 @@ html,body{height:100%;overflow:hidden;background:var(--black);color:var(--text-1
           <span id="chLabel">טוען ערוץ...</span>
         </div>
 
-        
         <div class="collage-overlay" id="collageOverlay">
           </div>
 
@@ -696,7 +695,6 @@ function buildCollage() {
     `;
     overlay.appendChild(cell);
 
-    // משיכת הקישור מה-API בצורה דינמית
     fetch(`${API_BASE_URL}${ch.id}&t=${Date.now()}`)
       .then(res => res.json())
       .then(data => {
@@ -704,8 +702,10 @@ function buildCollage() {
           let mediaHtml = '';
           let actionsHtml = `<button class="cell-action-btn expand" onclick="expandCell(event, ${i})" title="הגדל לערוץ מרכזי">⛶</button>`;
 
+          // תמיכה בהשתקה גם לאייפריים וגם לוידאו
           if (data.type === 'iframe') {
-            mediaHtml = `<iframe src="${data.url}" allow="autoplay; fullscreen" style="pointer-events:none;"></iframe>`;
+            mediaHtml = `<iframe id="cellvid_${i}" data-muted="true" src="${data.url}" allow="autoplay; fullscreen" style="pointer-events:none;"></iframe>`;
+            actionsHtml += `<button class="cell-action-btn mute" onclick="toggleCellMute(event, ${i})" title="השתק / הפעל שמע">🔇</button>`;
           } else if (data.type === 'hls') {
             mediaHtml = `<video id="cellvid_${i}" autoplay muted playsinline></video>`;
             actionsHtml += `<button class="cell-action-btn mute" onclick="toggleCellMute(event, ${i})" title="השתק / הפעל שמע">🔇</button>`;
@@ -724,10 +724,14 @@ function buildCollage() {
               const hls = new Hls({ enableWorker:true, lowLatencyMode:true, maxBufferLength:10 });
               hls.loadSource(data.url);
               hls.attachMedia(video);
-              hls.on(Hls.Events.MANIFEST_PARSED, () => video.play().catch(()=>{}));
+              hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                video.muted = true;
+                video.play().catch(()=>{});
+              });
               collageHlsInstances[i] = hls;
             } else if (video.canPlayType('application/vnd.apple.mpegurl')) {
               video.src = data.url;
+              video.muted = true;
               video.play();
             }
           }
@@ -771,9 +775,34 @@ function expandCell(event, index) {
 function toggleCellMute(event, index) {
   if (event) event.stopPropagation();
   const vid = document.getElementById(`cellvid_${index}`);
-  if (vid) {
+  if (!vid) return;
+
+  if (vid.tagName === 'VIDEO') {
+    // השתקה לנגני HLS
     vid.muted = !vid.muted;
     event.target.textContent = vid.muted ? '🔇' : '🔊';
+  } else if (vid.tagName === 'IFRAME') {
+    // השתקה לנגני Iframe (YouTube, ערוץ 14 וכו') ע"י מניפולציה של הקישור
+    let isMuted = vid.getAttribute('data-muted') === 'true';
+    let currentSrc = vid.src;
+    
+    if (isMuted) {
+      // מעבר לסטטוס קול דולק
+      currentSrc = currentSrc.replace(/mute=1/gi, 'mute=0')
+                             .replace(/muted=1/gi, 'muted=0')
+                             .replace(/muted=true/gi, 'muted=false');
+      vid.src = currentSrc;
+      vid.setAttribute('data-muted', 'false');
+      event.target.textContent = '🔊';
+    } else {
+      // מעבר לסטטוס מושתק
+      currentSrc = currentSrc.replace(/mute=0/gi, 'mute=1')
+                             .replace(/muted=0/gi, 'muted=1')
+                             .replace(/muted=false/gi, 'muted=true');
+      vid.src = currentSrc;
+      vid.setAttribute('data-muted', 'true');
+      event.target.textContent = '🔇';
+    }
   }
 }
 
