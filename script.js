@@ -385,11 +385,9 @@ function closeM(){document.getElementById('modalBg').classList.remove('open');}
 function flagM(){if(activeM)alert('✓ סומן:\n'+activeM.hl);}
 function copyM(){if(activeM)navigator.clipboard.writeText(activeM.hl).then(()=>alert('הועתק!'));}
 
-async function init(){
-  renderChannelBar(); switchChByIndex(0); await fetchAll(); setInterval(fetchAll,3*60*1000);
-}
-
-init();
+// ==========================================
+// מנגנון עדכון דינמי לטקסט הרץ מ-JSON
+// ==========================================
 async function loadCustomMarquee() {
     try {
         const response = await fetch(`custom-marquee-text.json?t=${new Date().getTime()}`);
@@ -409,5 +407,14 @@ async function loadCustomMarquee() {
     }
 }
 
+// קריאה לפונקציה בעת טעינת העמוד
 document.addEventListener('DOMContentLoaded', loadCustomMarquee);
-setInterval(loadCustomMarquee, 30000); // רענון אוטומטי כל 30 שניות
+
+// רענון אוטומטי של הטקסט הרץ כל 30 שניות
+setInterval(loadCustomMarquee, 30000);
+
+async function init(){
+  renderChannelBar(); switchChByIndex(0); await fetchAll(); setInterval(fetchAll,3*60*1000);
+}
+
+init();
