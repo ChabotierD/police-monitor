@@ -390,3 +390,24 @@ async function init(){
 }
 
 init();
+async function loadCustomMarquee() {
+    try {
+        const response = await fetch(`custom-marquee-text.json?t=${new Date().getTime()}`);
+        
+        if (!response.ok) {
+            throw new Error(`שגיאה בטעינת הקובץ: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const marqueeElement = document.querySelector('.custom-marquee-text');
+        
+        if (marqueeElement && data.marqueeText) {
+            marqueeElement.textContent = data.marqueeText;
+        }
+    } catch (error) {
+        console.error('שגיאה בעדכון הטקסט הרץ:', error);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadCustomMarquee);
+setInterval(loadCustomMarquee, 30000); // רענון אוטומטי כל 30 שניות
